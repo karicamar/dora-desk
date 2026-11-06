@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DoraDesk.Domain/DoraDesk.Domain.csproj" />
+    <Project Path="src/DoraDesk.Web/DoraDesk.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DoraDesk.Tests/DoraDesk.Tests.csproj" />
+  </Folder>
+</Solution>

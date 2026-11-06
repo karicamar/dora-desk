@@ -1,0 +1,30 @@
+@using DoraDesk.Domain.Reporting
+@using DoraDesk.Web.Services
+@inject Clock Clock
+
+<span class="deadline @Css" title="@Tooltip">
+    <span class="kind">@Kind</span>
+    <span class="when">@Text</span>
+</span>
+
+@code {
+    [Parameter, EditorRequired] public DeadlineInfo Deadline { get; set; } = default!;
+    [Parameter, EditorRequired] public DateTimeOffset Now { get; set; }
+
+    string Kind => Deadline.Type switch
+    {
+        ReportType.Initial => "Initial notification",
+        ReportType.Intermediate => "Intermediate report",
+        _ => "Final report",
+    };
+
+    string Css => Deadline.IsSubmitted ? (Deadline.SubmittedLate ? "done late" : "done")
+        : Deadline.IsOverdue(Now) ? "overdue"
+        : Deadline.Remaining(Now) < TimeSpan.FromHours(2) ? "urgent" : "pending";
+
+    string Text => Deadline.IsSubmitted
+        ? $"sent {Clock.Format(Deadline.SubmittedAt)}{(Deadline.SubmittedLate ? " (late)" : "")}"
+        : Deadlines.Describe(Deadline.Remaining(Now));
+
+    string Tooltip => $"Due {Clock.Format(Deadline.Due)} ({Clock.Local(Deadline.Due):zzz})";
+}

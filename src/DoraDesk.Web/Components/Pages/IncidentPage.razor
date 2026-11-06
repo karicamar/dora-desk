@@ -1,0 +1,414 @@
+@page "/incidents/{Id:int}"
+@rendermode InteractiveServer
+@inherits DeskPage
+@implements IDisposable
+@inject TimeProvider Time
+@inject Microsoft.Extensions.Options.IOptions<DeskOptions> Options
+
+<PageTitle>@(incident?.Reference ?? "Incident") · DORA Desk</PageTitle>
+
+@if (incident is null)
+{
+    @if (Error is not null)
+    {
+        <p class="error" role="alert">@Error</p>
+    }
+    else
+    {
+        <p class="muted">Loading…</p>
+    }
+}
+else
+{
+    var now = Clock.Now;
+    var editable = Me?.CanEdit == true && incident.Status != IncidentStatus.Closed;
+    <header class="incident-head">
+        <div>
+            <span class="ref-code">@incident.Reference</span>
+            <span class="status @incident.Status.ToString().ToLowerInvariant()">@incident.Status</span>
+            @if (incident.Class is { } c)
+            {
+                <span class="class @(c == IncidentClass.Major ? "major" : "minor")">@IncidentService.Label(c)</span>
+            }
+            else
+            {
+                <span class="class pending">to classify</span>
+            }
+            @if (incident.Source == "logsentinel")
+            {
+                <span class="source">from LogSentinel</span>
+            }
+        </div>
+        <h1>@incident.Title</h1>
+        <p class="muted">
+            Detected @Clock.Format(incident.DetectedAt) · recorded by @incident.CreatedBy
+            @if (incident.ThirdPartyProvider is { } p)
+            {
+                <text> · ICT third-party provider: @p</text>
+            }
+        </p>
+    </header>
+
+    @if (Error is not null)
+    {
+        <p class="error" role="alert">@Error</p>
+    }
+    @if (Notice is not null)
+    {
+        <p class="notice" role="status">@Notice</p>
+    }
+
+    <nav class="tabs" aria-label="Sections">
+        @foreach (var (key, label) in Tabs)
+        {
+            <button type="button" class="@(tab == key ? "active" : "")" aria-pressed="@(tab == key)" @onclick="() => tab = key">@label</button>
+        }
+    </nav>
+
+    @switch (tab)
+    {
+        case "classify":
+            <section>
+                @if (incident.Class is not null)
+                {
+                    <p class="confirmed">
+                        Confirmed as <strong>@IncidentService.Label(incident.Class.Value)</strong> by @incident.ClassifiedBy on @Clock.Format(incident.ClassifiedAt).
+                        @if (incident.ClassifiedMajorAt is { } m && incident.Class != IncidentClass.Major)
+                        {
+                            <text> First classified as major on @Clock.Format(m): reports already due stay due.</text>
+                        }
+                    </p>
+                }
+                else
+                {
+                    <p class="banner">
+                        Not classified yet. If it is major, the initial notification is due no later than
+                        <strong>@Clock.Format(incident.DetectedAt.AddHours(24))</strong> (24 hours after detection).
+                    </p>
+                }
+                <AssessmentEditor Model="assessment" ReadOnly="@(!editable)" />
+                @if (editable)
+                {
+                    <div class="actions">
+                        <button type="button" class="button" disabled="@Busy" @onclick="SaveAssessment">Save assessment</button>
+                        <button type="button" class="button primary" disabled="@Busy" @onclick="Classify">Save and confirm classification</button>
+                    </div>
+                }
+            </section>
+            break;
+
+        case "report":
+            <section>
+                @if (incident.ClassifiedMajorAt is null)
+                {
+                    <p class="muted">Only major incidents are reported to @Options.Value.CompetentAuthority. Classify the incident first.</p>
+                }
+                else
+                {
+                    <div class="deadlines">
+                        @foreach (var d in IncidentService.Timeline(incident))
+                        {
+                            <DeadlineBadge Deadline="d" Now="now" />
+                        }
+                    </div>
+                    <p class="muted">
+                        The clock started with the classification as major on @Clock.Format(incident.ClassifiedMajorAt).
+                        Initial notification: 4 h after classification, at most 24 h after detection. Intermediate report:
+                        72 h after the initial notification. Final report: one month after the last intermediate report.
+                    </p>
+
+                    @if (editable)
+                    {
+                        <div class="actions">
+                            @foreach (var t in IncidentService.NextReportTypes(incident))
+                            {
+                                <button type="button" class="button" disabled="@Busy" @onclick="() => Prepare(t)">Prepare @IncidentService.Label(t) report</button>
+                            }
+                        </div>
+                        @if (IncidentService.NextReportTypes(incident) is { Count: > 0 } next)
+                        {
+                            var missing = IncidentReport.Missing(next[^1], Options.Value.Entity, IncidentService.Facts(incident), Classifier.Classify(incident.Assessment));
+                            @if (missing.Count > 0)
+                            {
+                                <p class="banner">Still missing for the @IncidentService.Label(next[^1]) report: @string.Join(", ", missing).</p>
+                            }
+                        }
+                    }
+
+                    <table class="grid">
+                        <thead><tr><th>Report</th><th>Prepared</th><th>Content</th><th>Submitted</th><th></th></tr></thead>
+                        <tbody>
+                            @foreach (var r in incident.Reports.OrderByDescending(r => r.PreparedAt))
+                            {
+                                var stale = r.SubmittedAt is null && r.IncidentVersion != incident.Version;
+                                <tr class="@(stale ? "stale" : "")">
+                                    <td>@IncidentService.Label(r.Type)</td>
+                                    <td>@Clock.Format(r.PreparedAt)<br /><span class="muted">by @r.PreparedBy</span></td>
+                                    <td><a href="/reports/@(r.Id).json" download>JSON</a><br /><code title="SHA-256">@r.Sha256[..12]…</code></td>
+                                    <td>
+                                        @if (r.SubmittedAt is { } s)
+                                        {
+                                            @Clock.Format(s)<br /><span class="muted">by @r.SubmittedBy @(r.AuthorityReference is { } a ? $"· {a}" : "")</span>
+                                        }
+                                        else if (stale)
+                                        {
+                                            <span class="muted">outdated: the incident changed afterwards</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="muted">draft</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (r.SubmittedAt is null && !stale && Me?.CanSubmit == true)
+                                        {
+                                            <div class="submit">
+                                                <input placeholder="Authority reference" aria-label="Authority reference" maxlength="60" @bind="authorityReference" />
+                                                <button type="button" class="button primary" disabled="@Busy" @onclick="() => Submit(r.Id)">Mark as submitted</button>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @if (Me?.CanSubmit == true)
+                    {
+                        <p class="muted">Four-eyes principle: a report is submitted by an officer who did not prepare it. The submission itself happens in the authority's portal; record it here with its reference.</p>
+                    }
+                }
+            </section>
+            break;
+
+        case "details":
+            <section>
+                <EditForm Model="details" OnValidSubmit="SaveDetails" FormName="details" class="form">
+                    <fieldset disabled="@(!editable)">
+                        <label>Title <InputText @bind-Value="details.Title" maxlength="200" /></label>
+                        <label>Description <InputTextArea @bind-Value="details.Description" rows="5" maxlength="8000" /></label>
+                        <div class="row">
+                            <label>Occurred <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="details.OccurredAt" /></label>
+                            <label>Detected <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="details.DetectedAt" /></label>
+                        </div>
+                        <div class="row">
+                            <label>Services recovered <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="details.RecoveredAt" /></label>
+                            <label>Resolved <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="details.ResolvedAt" /></label>
+                        </div>
+                        <div class="row">
+                            <label>
+                                Root cause category
+                                <InputSelect @bind-Value="details.RootCause">
+                                    <option value="">unknown yet</option>
+                                    @foreach (var rc in Enum.GetValues<RootCauseCategory>())
+                                    {
+                                        <option value="@rc">@rc</option>
+                                    }
+                                </InputSelect>
+                            </label>
+                            <label>Root cause, short label (to find recurrences) <InputText @bind-Value="details.RootCauseKey" maxlength="120" placeholder="e.g. expired TLS certificate" /></label>
+                        </div>
+                        <label>Root cause <InputTextArea @bind-Value="details.RootCauseDescription" rows="3" maxlength="4000" /></label>
+                        <label>Measures taken <InputTextArea @bind-Value="details.MeasuresTaken" rows="3" maxlength="4000" /></label>
+                        <label>Lessons learned <InputTextArea @bind-Value="details.LessonsLearned" rows="3" maxlength="4000" /></label>
+                        <label>ICT third-party provider <InputText @bind-Value="details.Provider" maxlength="120" /></label>
+                        <label class="check"><InputCheckbox @bind-Value="details.ClientsInformed" /> Clients informed (DORA Art. 19(3), where their financial interests are affected)</label>
+                    </fieldset>
+                    @if (editable)
+                    {
+                        <div class="actions">
+                            <button type="submit" class="button primary" disabled="@Busy">Save details</button>
+                            @if (incident.Status == IncidentStatus.Open)
+                            {
+                                <button type="button" class="button" disabled="@Busy" @onclick="Resolve">Mark as resolved</button>
+                            }
+                            @if (incident.Status == IncidentStatus.Resolved && Me?.CanSubmit == true)
+                            {
+                                <button type="button" class="button" disabled="@Busy" @onclick="Close">Close incident</button>
+                            }
+                        </div>
+                    }
+                </EditForm>
+            </section>
+            break;
+
+        case "evidence":
+            <section>
+                @if (incident.Techniques.Count > 0)
+                {
+                    <p><strong>MITRE ATT&amp;CK:</strong> @string.Join(" · ", incident.Techniques)</p>
+                }
+                @if (incident.Alerts.Count == 0)
+                {
+                    <p class="muted">No detections attached. Incidents imported from LogSentinel carry their alerts here.</p>
+                }
+                else
+                {
+                    <AlertTable Alerts="@incident.Alerts.Select(a => (a.Severity, a.Title, a.Technique, a.User ?? a.Host ?? a.SourceIp, a.FirstSeen)).ToList()" />
+                }
+            </section>
+            break;
+
+        default:
+            <section>
+                <ol class="timeline">
+                    @foreach (var t in incident.Timeline.OrderByDescending(t => t.At).ThenByDescending(t => t.Id))
+                    {
+                        <li class="@(t.Action.Contains("denied") ? "denied" : "")">
+                            <span class="at">@Clock.Format(t.At)</span>
+                            <span class="actor">@t.Actor</span>
+                            <code class="action">@t.Action</code>
+                            <span class="detail">@t.Detail</span>
+                        </li>
+                    }
+                </ol>
+            </section>
+            break;
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    static readonly (string Key, string Label)[] Tabs =
+        [("classify", "Impact & classification"), ("report", "Reporting"), ("details", "Details & root cause"), ("evidence", "Evidence"), ("timeline", "Timeline")];
+
+    sealed class DetailsForm
+    {
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+        public DateTime? OccurredAt { get; set; }
+        public DateTime? DetectedAt { get; set; }
+        public DateTime? RecoveredAt { get; set; }
+        public DateTime? ResolvedAt { get; set; }
+        public RootCauseCategory? RootCause { get; set; }
+        public string RootCauseKey { get; set; } = "";
+        public string RootCauseDescription { get; set; } = "";
+        public string MeasuresTaken { get; set; } = "";
+        public string LessonsLearned { get; set; } = "";
+        public string? Provider { get; set; }
+        public bool ClientsInformed { get; set; }
+    }
+
+    Incident? incident;
+    AssessmentModel assessment = new();
+    DetailsForm details = new();
+    string tab = "classify";
+    string? authorityReference;
+    ITimer? timer;
+
+    protected override async Task LoadAsync()
+    {
+        try
+        {
+            incident = await Incidents.GetAsync(Id);
+        }
+        catch (DeskException e)
+        {
+            Error = e.Message;
+            return;
+        }
+        assessment = AssessmentModel.From(incident.Assessment);
+        DateTime? L(DateTimeOffset? t) => t is { } v ? Clock.Local(v).DateTime : null;
+        details = new DetailsForm
+        {
+            Title = incident.Title,
+            Description = incident.Description,
+            OccurredAt = L(incident.OccurredAt),
+            DetectedAt = L(incident.DetectedAt),
+            RecoveredAt = L(incident.RecoveredAt),
+            ResolvedAt = L(incident.ResolvedAt),
+            RootCause = incident.RootCause,
+            RootCauseKey = incident.RootCauseKey,
+            RootCauseDescription = incident.RootCauseDescription,
+            MeasuresTaken = incident.MeasuresTaken,
+            LessonsLearned = incident.LessonsLearned,
+            Provider = incident.ThirdPartyProvider,
+            ClientsInformed = incident.ClientsInformed,
+        };
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            timer = Time.CreateTimer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+    }
+
+    Task SaveAssessment() => Run(async me =>
+    {
+        await Incidents.SaveAssessmentAsync(me, Id, incident!.Version, assessment.ToAssessment());
+        await LoadAsync();
+    }, "Assessment saved. The classification is confirmed separately.");
+
+    async Task Classify()
+    {
+        await Run(async me =>
+        {
+            if (!Equals(Json(assessment.ToAssessment()), Json(incident!.Assessment)))
+            {
+                await Incidents.SaveAssessmentAsync(me, Id, incident.Version, assessment.ToAssessment());
+                await LoadAsync();
+            }
+            var result = await Incidents.ClassifyAsync(me, Id, incident!.Version);
+            await LoadAsync();
+            if (result.IsMajor) tab = "report";
+        }, "Classification confirmed and recorded in the timeline.");
+    }
+
+    Task Prepare(ReportType type) => Run(async me =>
+    {
+        await Incidents.PrepareReportAsync(me, Id, type);
+        await LoadAsync();
+    }, $"The {IncidentService.Label(type)} report is ready for an officer to review and submit.");
+
+    Task Submit(int reportId) => Run(async me =>
+    {
+        try
+        {
+            await Incidents.SubmitReportAsync(me, reportId, authorityReference);
+            authorityReference = null;
+        }
+        finally
+        {
+            await LoadAsync();
+        }
+    }, "Submission recorded.");
+
+    Task SaveDetails() => Run(async me =>
+    {
+        if (details.DetectedAt is null) throw new DeskException(DeskError.Invalid, "The detection time is required.");
+        DateTimeOffset? U(DateTime? t) => t is { } v ? Clock.FromLocal(v) : null;
+        await Incidents.UpdateDetailsAsync(me, Id, incident!.Version, new IncidentDetails
+        {
+            Title = details.Title,
+            Description = details.Description,
+            OccurredAt = U(details.OccurredAt),
+            DetectedAt = U(details.DetectedAt)!.Value,
+            RecoveredAt = U(details.RecoveredAt),
+            ResolvedAt = U(details.ResolvedAt),
+            RootCause = details.RootCause,
+            RootCauseKey = details.RootCauseKey,
+            RootCauseDescription = details.RootCauseDescription,
+            MeasuresTaken = details.MeasuresTaken,
+            LessonsLearned = details.LessonsLearned,
+            ThirdPartyProvider = details.Provider,
+            ClientsInformed = details.ClientsInformed,
+        });
+        await LoadAsync();
+    }, "Details saved.");
+
+    Task Resolve() => Run(async me =>
+    {
+        await Incidents.ResolveAsync(me, Id, incident!.Version);
+        await LoadAsync();
+    }, "Incident resolved.");
+
+    Task Close() => Run(async me =>
+    {
+        await Incidents.CloseAsync(me, Id, incident!.Version);
+        await LoadAsync();
+    }, "Incident closed.");
+
+    static string Json(ImpactAssessment a) => System.Text.Json.JsonSerializer.Serialize(a);
+
+    public void Dispose() => timer?.Dispose();
+}

@@ -1,0 +1,111 @@
+@page "/"
+@rendermode InteractiveServer
+@inherits DeskPage
+@implements IDisposable
+@inject TimeProvider Time
+
+<PageTitle>Dashboard · DORA Desk</PageTitle>
+
+<h1>Incidents and reporting deadlines</h1>
+
+@if (rows is null)
+{
+    <p class="muted">Loading…</p>
+}
+else
+{
+    var now = Clock.Now;
+    <div class="tiles">
+        <div class="tile"><span class="n">@rows.Count(r => r.Status != IncidentStatus.Closed)</span> open</div>
+        <div class="tile @(rows.Any(r => r.AwaitingClassification) ? "warn" : "")">
+            <span class="n">@rows.Count(r => r.AwaitingClassification)</span> waiting for classification
+        </div>
+        <div class="tile"><span class="n">@rows.Count(r => r.Class == IncidentClass.Major && r.Status != IncidentStatus.Closed)</span> major</div>
+        <div class="tile @(rows.Any(r => r.Next?.IsOverdue(now) == true) ? "alarm" : "")">
+            <span class="n">@rows.Count(r => r.Next?.IsOverdue(now) == true)</span> report(s) overdue
+        </div>
+    </div>
+
+    @if (recurring.Count > 0)
+    {
+        <p class="banner">
+            <strong>Recurring incidents:</strong> @recurring.Count group(s) of minor incidents with the same root cause are major
+            when taken together (Art. 16). <a href="/recurring">Review</a>
+        </p>
+    }
+
+    <div class="toolbar">
+        <label class="check"><input type="checkbox" checked="@showClosed" @onchange="ToggleClosed" /> Show closed incidents</label>
+        <span class="muted">Times in @Clock.Local(now).ToString("zzz") (Frankfurt). Updates every 30 seconds.</span>
+    </div>
+
+    <table class="grid">
+        <thead>
+            <tr><th>Reference</th><th>Incident</th><th>Status</th><th>Class</th><th>Next deadline</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var r in rows)
+            {
+                <tr>
+                    <td><a href="/incidents/@r.Id">@r.Reference</a></td>
+                    <td>@r.Title<br /><span class="muted">detected @Clock.Format(r.DetectedAt)</span></td>
+                    <td><span class="status @r.Status.ToString().ToLowerInvariant()">@r.Status</span></td>
+                    <td>
+                        @if (r.Class is { } c)
+                        {
+                            <span class="class @(c == IncidentClass.Major ? "major" : "minor")">@IncidentService.Label(c)</span>
+                        }
+                        else
+                        {
+                            <span class="class pending">to classify</span>
+                        }
+                    </td>
+                    <td>
+                        @if (r.Next is { } d)
+                        {
+                            <DeadlineBadge Deadline="d" Now="now" />
+                        }
+                        else if (r.AwaitingClassification)
+                        {
+                            <span class="deadline @(now > r.DetectedAt.AddHours(20) ? "urgent" : "pending")">
+                                <span class="kind">Classify</span>
+                                <span class="when">if major, notify by @Clock.Format(r.DetectedAt.AddHours(24))</span>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="muted">–</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    IReadOnlyList<DashboardRow>? rows;
+    IReadOnlyList<RecurringIncidentGroup> recurring = [];
+    bool showClosed;
+    ITimer? timer;
+
+    protected override async Task LoadAsync()
+    {
+        rows = await Incidents.DashboardAsync(showClosed);
+        recurring = await Incidents.RecurringAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            timer = Time.CreateTimer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+    }
+
+    async Task ToggleClosed(ChangeEventArgs e)
+    {
+        showClosed = e.Value is true;
+        await LoadAsync();
+    }
+
+    public void Dispose() => timer?.Dispose();
+}

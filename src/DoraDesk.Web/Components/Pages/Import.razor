@@ -1,0 +1,93 @@
+@page "/import"
+@rendermode InteractiveServer
+@attribute [Authorize(Policy = Policies.Edit)]
+@inherits DeskPage
+@using DoraDesk.Domain.Integration
+
+<PageTitle>Import alerts · DORA Desk</PageTitle>
+
+<h1>Import detections from LogSentinel</h1>
+<p class="lead">
+    Upload the JSON from <code>logsentinel analyze … --format json</code> (or <code>/api/alerts</code> of its dashboard).
+    DORA Desk proposes an incident with the alerts as evidence and points to the criteria they affect. It never classifies on its own.
+</p>
+
+<div class="toolbar">
+    <InputFile OnChange="Upload" accept=".json,application/json" />
+    <button type="button" class="button" @onclick="LoadSample">Use the sample (phishing → payment fraud)</button>
+</div>
+
+@if (Error is not null)
+{
+    <p class="error" role="alert">@Error</p>
+}
+
+@if (draft is not null)
+{
+    <section class="card">
+        <h2>@draft.Title</h2>
+        <p>@draft.Description</p>
+        <dl class="facts">
+            <dt>Occurred</dt><dd>@Clock.Format(draft.OccurredAt) (first alert)</dd>
+            <dt>Detected</dt><dd>@Clock.Format(draft.DetectedAt) (now: you are looking at it)</dd>
+            <dt>Techniques</dt><dd>@string.Join(" · ", draft.Techniques)</dd>
+        </dl>
+
+        @if (draft.Hints.Count > 0)
+        {
+            <h3>What to check for the classification</h3>
+            <ul class="hints">
+                @foreach (var h in draft.Hints)
+                {
+                    <li>@h</li>
+                }
+            </ul>
+        }
+
+        <h3>@draft.Alerts.Count alert(s)</h3>
+        <AlertTable Alerts="@draft.Alerts.Select(a => (a.Severity, a.Title, $"{a.TechniqueId} {a.TechniqueName}".Trim(), a.User ?? a.Host ?? a.SourceIp, a.FirstSeen)).ToList()" />
+
+        <button type="button" class="button primary" disabled="@Busy" @onclick="Create">Create incident</button>
+    </section>
+}
+
+@code {
+    IncidentDraft? draft;
+
+    async Task Upload(InputFileChangeEventArgs e)
+    {
+        draft = null;
+        Error = null;
+        try
+        {
+            await using var stream = e.File.OpenReadStream(LogSentinelImport.MaxBytes);
+            using var reader = new StreamReader(stream);
+            Parse(await reader.ReadToEndAsync());
+        }
+        catch (IOException)
+        {
+            Error = "The file is larger than 5 MB.";
+        }
+    }
+
+    async Task LoadSample() =>
+        Parse(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Data", "Seed", "logsentinel-payment-fraud.json")));
+
+    void Parse(string json)
+    {
+        try
+        {
+            draft = LogSentinelImport.Draft(LogSentinelImport.Parse(json), Clock.Now);
+        }
+        catch (ImportException ex)
+        {
+            Error = ex.Message;
+        }
+    }
+
+    Task Create() => Run(async me =>
+    {
+        var id = await Incidents.ImportAsync(me, draft!);
+        Nav.NavigateTo($"/incidents/{id}");
+    });
+}

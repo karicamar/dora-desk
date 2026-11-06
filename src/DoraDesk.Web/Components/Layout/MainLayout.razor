@@ -1,0 +1,44 @@
+@inherits LayoutComponentBase
+@inject Microsoft.Extensions.Options.IOptions<DeskOptions> Options
+
+<header class="topbar">
+    <a class="brand" href="/">
+        <span class="logo" aria-hidden="true">◆</span> DORA Desk
+        <span class="entity">@Options.Value.EntityName</span>
+    </a>
+    <AuthorizeView>
+        <Authorized>
+            <nav aria-label="Main">
+                <NavLink href="/" Match="NavLinkMatch.All">Dashboard</NavLink>
+                <AuthorizeView Policy="@Policies.Edit" Context="edit">
+                    <NavLink href="/incidents/new">New incident</NavLink>
+                    <NavLink href="/import">Import alerts</NavLink>
+                </AuthorizeView>
+                <NavLink href="/recurring">Recurring</NavLink>
+            </nav>
+            <div class="me">
+                <span class="who">@context.User.Identity?.Name</span>
+                <span class="role">@string.Join(", ", context.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))</span>
+                <form method="post" action="/account/logout">
+                    <AntiforgeryToken />
+                    <button type="submit" class="link">Sign out</button>
+                </form>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</header>
+
+<main>
+    @Body
+</main>
+
+<footer class="foot">
+    Classification per Delegated Regulation (EU) 2024/1772 · deadlines per Delegated Regulation (EU) 2025/301 ·
+    a portfolio project, not legal advice
+</footer>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unexpected error occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

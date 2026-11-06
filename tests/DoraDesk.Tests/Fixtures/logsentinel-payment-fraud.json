@@ -1,0 +1,67 @@
+[
+  {
+    "ruleId": "LS-MAIL-002",
+    "title": "'lena@example.de' logged in from a new IP after a phishing email",
+    "severity": "Critical",
+    "technique": {
+      "id": "T1078",
+      "name": "Valid Accounts",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1078/"
+    },
+    "description": "17 min after receiving \"Passwort läuft heute ab\" (LikelyPhishing), 'lena@example.de' logged in from 192.0.2.77, an address never seen for this account. Treat the password as stolen: reset it, revoke all sessions and tokens, and check MFA devices and mailbox rules.",
+    "sourceIp": "192.0.2.77",
+    "user": "lena@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T10:02:00+00:00",
+    "lastSeen": "2026-10-31T10:19:00+00:00",
+    "eventCount": 2,
+    "evidence": [
+      "{\"timestamp\":\"2026-10-31T10:02:00Z\",\"source\":\"phishlens\",\"type\":\"email.analyzed\",\"verdict\":\"LikelyPhishing\",\"score\":0,\"recipient\":\"lena@example.de\",\"sender\":\"it-service@examp1e-bank.example\",\"subject\":\"Passwort l\\u00E4uft heute ab\",\"originIp\":\"198.51.100.140\"}",
+      "{\"timestamp\":\"2026-10-31T10:19:00.0000000Z\",\"type\":\"login.success\",\"success\":true,\"email\":\"lena@example.de\",\"ipAddress\":\"192.0.2.77\",\"detail\":null}"
+    ]
+  },
+  {
+    "ruleId": "LS-FIN-001",
+    "title": "lena@example.de tried 2 times to approve their own payments",
+    "severity": "High",
+    "technique": {
+      "id": "T1657",
+      "name": "Financial Theft",
+      "tactic": "Impact",
+      "url": "https://attack.mitre.org/techniques/T1657/"
+    },
+    "description": "Kontor refused 2 self-approval attempt(s) on 1 payment(s) (payment.self_approval_denied 9850.00 EUR: You entered this payment yourself.). Check with the payment owner whether the transfers are genuine, hold them, and review the account's recent logins: an attacker with a clerk's password would try exactly this.",
+    "sourceIp": null,
+    "user": "lena@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T10:23:00+00:00",
+    "lastSeen": "2026-10-31T10:25:00+00:00",
+    "eventCount": 2,
+    "evidence": [
+      "{\"timestamp\":\"2026-10-31T10:23:00.000Z\",\"source\":\"kontor\",\"sequence\":42,\"actor\":\"lena@example.de\",\"action\":\"payment.self_approval_denied\",\"subject\":\"00000000-0000-0000-0000-000000000000\",\"details\":{\"amount\":9850.00,\"reason\":\"You entered this payment yourself.\",\"endToEndId\":\"KON-20261110-4F1A9C2B7E01\"}}",
+      "{\"timestamp\":\"2026-10-31T10:25:00.000Z\",\"source\":\"kontor\",\"sequence\":43,\"actor\":\"lena@example.de\",\"action\":\"payment.self_approval_denied\",\"subject\":\"00000000-0000-0000-0000-000000000000\",\"details\":{\"amount\":9850.00,\"reason\":\"You entered this payment yourself.\",\"endToEndId\":\"KON-20261110-4F1A9C2B7E01\"}}"
+    ]
+  },
+  {
+    "ruleId": "LS-MAIL-001",
+    "title": "Phishing delivered to lena@example.de",
+    "severity": "Medium",
+    "technique": {
+      "id": "T1566",
+      "name": "Phishing",
+      "tactic": "Initial Access",
+      "url": "https://attack.mitre.org/techniques/T1566/"
+    },
+    "description": "PhishLens judged \"Passwort läuft heute ab\" from it-service@examp1e-bank.example as LikelyPhishing. Find the other recipients, remove the message, block the indicators, and check whether anyone clicked.",
+    "sourceIp": "198.51.100.140",
+    "user": "lena@example.de",
+    "host": null,
+    "firstSeen": "2026-10-31T10:02:00+00:00",
+    "lastSeen": "2026-10-31T10:02:00+00:00",
+    "eventCount": 1,
+    "evidence": [
+      "{\"timestamp\":\"2026-10-31T10:02:00Z\",\"source\":\"phishlens\",\"type\":\"email.analyzed\",\"verdict\":\"LikelyPhishing\",\"score\":0,\"recipient\":\"lena@example.de\",\"sender\":\"it-service@examp1e-bank.example\",\"subject\":\"Passwort l\\u00E4uft heute ab\",\"originIp\":\"198.51.100.140\"}"
+    ]
+  }
+]

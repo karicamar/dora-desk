@@ -1,0 +1,57 @@
+@page "/incidents/new"
+@rendermode InteractiveServer
+@attribute [Authorize(Policy = Policies.Edit)]
+@inherits DeskPage
+
+<PageTitle>New incident · DORA Desk</PageTitle>
+
+<h1>Record an ICT-related incident</h1>
+<p class="lead">
+    Record it as soon as you know about it: the time of detection starts the 24-hour limit for the initial notification,
+    in case the incident turns out to be major.
+</p>
+
+<EditForm Model="form" OnValidSubmit="Save" FormName="new-incident" class="form">
+    <label>Title <InputText @bind-Value="form.Title" maxlength="200" required /></label>
+    <label>What happened? <InputTextArea @bind-Value="form.Description" rows="5" maxlength="8000" /></label>
+    <div class="row">
+        <label>Occurred (if known) <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="form.OccurredAt" /></label>
+        <label>Detected <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="form.DetectedAt" required /></label>
+    </div>
+    <label>ICT third-party provider involved (optional) <InputText @bind-Value="form.Provider" maxlength="120" /></label>
+    @if (Error is not null)
+    {
+        <p class="error" role="alert">@Error</p>
+    }
+    <button type="submit" class="button primary" disabled="@Busy">Record incident</button>
+</EditForm>
+
+@code {
+    sealed class Form
+    {
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+        public DateTime? OccurredAt { get; set; }
+        public DateTime? DetectedAt { get; set; }
+        public string? Provider { get; set; }
+    }
+
+    readonly Form form = new();
+
+    protected override Task LoadAsync()
+    {
+        form.DetectedAt = Clock.Local(Clock.Now).DateTime.AddSeconds(-Clock.Local(Clock.Now).Second);
+        return Task.CompletedTask;
+    }
+
+    Task Save() => Run(async me =>
+    {
+        if (form.DetectedAt is null) throw new DeskException(DeskError.Invalid, "The detection time is required.");
+        var id = await Incidents.CreateAsync(me, new DoraDesk.Web.Services.NewIncident(
+            form.Title, form.Description,
+            form.OccurredAt is { } o ? Clock.FromLocal(o) : null,
+            Clock.FromLocal(form.DetectedAt.Value),
+            form.Provider));
+        Nav.NavigateTo($"/incidents/{id}");
+    });
+}

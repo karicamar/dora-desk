@@ -1,0 +1,28 @@
+@using DoraDesk.Domain.Classification
+
+<section class="classification @(Result.IsMajor ? "major" : "minor")" aria-live="polite">
+    <header>
+        <span class="verdict">@(Result.IsMajor ? "Major incident" : "Not major")</span>
+        @if (Caption is not null)
+        {
+            <span class="caption">@Caption</span>
+        }
+    </header>
+    <p class="rationale">@Result.Rationale</p>
+    <ul class="criteria">
+        @foreach (var c in Result.Criteria)
+        {
+            <li class="@(c.Met ? "met" : "not-met")" data-criterion="@c.Criterion">
+                <span class="mark" aria-hidden="true">@(c.Met ? "●" : "○")</span>
+                <span class="name">@Classifier.Name(c.Criterion)</span>
+                <span class="ref">@c.Reference</span>
+                <span class="reason">@c.Reason</span>
+            </li>
+        }
+    </ul>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public ClassificationResult Result { get; set; } = default!;
+    [Parameter] public string? Caption { get; set; }
+}

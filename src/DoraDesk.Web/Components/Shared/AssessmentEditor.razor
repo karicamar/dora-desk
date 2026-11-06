@@ -1,0 +1,80 @@
+@* The impact assessment, grouped by the seven criteria, with the classification it leads to updated on every change. *@
+
+<div class="assessment">
+    <EditForm Model="Model" FormName="assessment" class="criteria-form">
+    <fieldset disabled="@ReadOnly">
+        <fieldset>
+            <legend>Critical services <span class="ref">Art. 6</span></legend>
+            <label class="check"><InputCheckbox @bind-Value="Model.SupportsCriticalOrImportantFunction" /> Affects ICT services that support a critical or important function</label>
+            <label class="check"><InputCheckbox @bind-Value="Model.AuthorisedFinancialServiceAffected" /> Affects a financial service that requires authorisation (e.g. payments)</label>
+            <label class="check"><InputCheckbox @bind-Value="Model.MaliciousAccessMayCauseDataLoss" /> Successful malicious unauthorised access that may result in data losses</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Clients, counterparts, transactions <span class="ref">Art. 1</span></legend>
+            <div class="row">
+                <label>Clients affected <InputNumber @bind-Value="Model.ClientsAffected" min="0" /></label>
+                <label>of clients using the service <InputNumber @bind-Value="Model.ClientsUsingService" min="0" /></label>
+            </div>
+            <div class="row">
+                <label>Financial counterparts affected <InputNumber @bind-Value="Model.CounterpartsAffected" min="0" /></label>
+                <label>of counterparts of the service <InputNumber @bind-Value="Model.CounterpartsOfService" min="0" /></label>
+            </div>
+            <div class="row">
+                <label>Transactions affected <InputNumber @bind-Value="Model.TransactionsAffected" min="0" /></label>
+                <label>daily average number <InputNumber @bind-Value="Model.DailyAverageTransactions" min="0" /></label>
+            </div>
+            <div class="row">
+                <label>Value affected (€) <InputNumber @bind-Value="Model.TransactionValueAffectedEur" min="0" step="0.01" /></label>
+                <label>daily average value (€) <InputNumber @bind-Value="Model.DailyAverageTransactionValueEur" min="0" step="0.01" /></label>
+            </div>
+            <label class="check"><InputCheckbox @bind-Value="Model.RelevantClientsOrCounterpartsAffected" /> Clients or counterparts identified as relevant are affected</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Reputational impact <span class="ref">Art. 2</span></legend>
+            <label class="check"><InputCheckbox @bind-Value="Model.MediaAttention" /> Media attention</label>
+            <label class="check"><InputCheckbox @bind-Value="Model.RepeatedComplaints" /> Repeated complaints from clients or counterparts</label>
+            <label class="check"><InputCheckbox @bind-Value="Model.RegulatoryRequirementsNotMet" /> Regulatory requirements could not be met</label>
+            <label class="check"><InputCheckbox @bind-Value="Model.LikelyLossOfClients" /> Likely loss of clients or counterparts</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Duration and downtime <span class="ref">Art. 3</span></legend>
+            <div class="row">
+                <label>Duration (hours) <InputNumber @bind-Value="Model.DurationHours" min="0" step="0.25" /></label>
+                <label>Service downtime (hours) <InputNumber @bind-Value="Model.DowntimeHours" min="0" step="0.25" /></label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Geographical spread <span class="ref">Art. 4</span></legend>
+            <label>Member states with an impact (ISO codes, e.g. DE, AT) <InputText @bind-Value="Model.MemberStates" maxlength="120" /></label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Data losses <span class="ref">Art. 5</span></legend>
+            <div class="checks-inline">
+                <label class="check"><InputCheckbox @bind-Value="Model.Availability" /> Availability</label>
+                <label class="check"><InputCheckbox @bind-Value="Model.Authenticity" /> Authenticity</label>
+                <label class="check"><InputCheckbox @bind-Value="Model.Integrity" /> Integrity</label>
+                <label class="check"><InputCheckbox @bind-Value="Model.Confidentiality" /> Confidentiality</label>
+            </div>
+            <label class="check"><InputCheckbox @bind-Value="Model.DataImpactHarmsBusinessOrCompliance" /> With an adverse effect on business objectives or regulatory requirements</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Economic impact <span class="ref">Art. 7</span></legend>
+            <label>Direct and indirect costs and losses, estimate (€) <InputNumber @bind-Value="Model.EconomicImpactEur" min="0" step="1000" /></label>
+        </fieldset>
+    </fieldset>
+    </EditForm>
+
+    <ClassificationPanel Result="@Classifier.Classify(Model.ToAssessment())" Caption="@Caption" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public AssessmentModel Model { get; set; } = default!;
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public string? Caption { get; set; } = "preview, updates as you type";
+}

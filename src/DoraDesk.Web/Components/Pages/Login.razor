@@ -1,0 +1,57 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@inject Microsoft.Extensions.Options.IOptions<DeskOptions> Options
+@inject IConfiguration Config
+
+<PageTitle>Sign in · DORA Desk</PageTitle>
+
+<section class="login">
+    <h1>Sign in</h1>
+    <p class="lead">
+        Record ICT incidents, classify them under DORA and keep the reporting deadlines to the supervisor.
+    </p>
+
+    @if (Error is not null)
+    {
+        <p class="error" role="alert">Unknown user.</p>
+    }
+
+    @if (Config["Auth:Oidc:Authority"] is { Length: > 0 })
+    {
+        <p><a class="button primary" href="/account/sso@(ReturnQuery)">Sign in with your company account</a></p>
+    }
+
+    @if (Options.Value.DemoLogin)
+    {
+        <h2>Demo users</h2>
+        <p class="muted">No passwords: this list exists only in the demo configuration (<code>Desk:DemoLogin</code>).</p>
+        <ul class="demo-users">
+            @foreach (var u in DemoUser.All)
+            {
+                <li>
+                    <form method="post" action="/account/login">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="user" value="@u.Name" />
+                        <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+                        <button type="submit" class="user-card">
+                            <strong>@u.DisplayName</strong>
+                            <span class="role-tag">@u.Role</span>
+                            <span>@u.Description</span>
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+    else if (Config["Auth:Oidc:Authority"] is not { Length: > 0 })
+    {
+        <p class="error">No sign-in method is configured. Set <code>Auth:Oidc</code>, or enable <code>Desk:DemoLogin</code> for a demo.</p>
+    }
+</section>
+
+@code {
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+
+    string ReturnQuery => ReturnUrl is { Length: > 0 } r ? "?returnUrl=" + Uri.EscapeDataString(r) : "";
+}

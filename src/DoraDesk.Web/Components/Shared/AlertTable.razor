@@ -1,0 +1,22 @@
+@inject Clock Clock
+
+<table class="grid compact">
+    <thead><tr><th>Severity</th><th>Alert</th><th>Technique</th><th>Account / host</th><th>First seen</th></tr></thead>
+    <tbody>
+        @foreach (var a in Alerts)
+        {
+            <tr>
+                <td><span class="sev @a.Severity.ToLowerInvariant()">@a.Severity</span></td>
+                <td>@a.Title</td>
+                <td>@a.Technique</td>
+                <td>@(a.Subject ?? "–")</td>
+                <td>@Clock.Format(a.FirstSeen)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public IReadOnlyList<(string Severity, string Title, string Technique, string? Subject, DateTimeOffset FirstSeen)> Alerts { get; set; } = [];
+}

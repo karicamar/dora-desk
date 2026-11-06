@@ -1,0 +1,42 @@
+@page "/recurring"
+@rendermode InteractiveServer
+@inherits DeskPage
+
+<PageTitle>Recurring incidents · DORA Desk</PageTitle>
+
+<h1>Recurring incidents</h1>
+<p class="lead">
+    Minor incidents that happened at least twice in six months with the same apparent root cause count as one major
+    incident when they meet the criteria together (Art. 16 of Delegated Regulation 2024/1772). Matching uses the short
+    root cause label of each incident.
+</p>
+
+@if (groups is null)
+{
+    <p class="muted">Loading…</p>
+}
+else if (groups.Count == 0)
+{
+    <p class="muted">No group of recurring incidents reaches the thresholds.</p>
+}
+else
+{
+    @foreach (var g in groups)
+    {
+        <section class="card">
+            <h2>Root cause: “@g.RootCauseKey”</h2>
+            <p>Incidents: @string.Join(", ", g.References)</p>
+            <ClassificationPanel Result="g.Classification" Caption="combined impact" />
+            <p class="muted">
+                Combined conservatively: counts, values, durations and costs added up; the largest baseline used.
+                Record a new incident for the recurrence and report it as major.
+            </p>
+        </section>
+    }
+}
+
+@code {
+    IReadOnlyList<RecurringIncidentGroup>? groups;
+
+    protected override async Task LoadAsync() => groups = await Incidents.RecurringAsync();
+}
